@@ -1,10 +1,14 @@
 package com.example.rabbitmq.controller;
 
+import com.example.rabbitmq.model.CustomMessage;
 import com.example.rabbitmq.service.MessageProducer;
+
+import java.time.LocalDateTime;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/mensajes")
+@RequestMapping("/api/messages")
 public class MessageController {
 
     private final MessageProducer producer;
@@ -14,8 +18,9 @@ public class MessageController {
     }
 
     @PostMapping
-    public String enviarMensaje(@RequestBody String mensaje) {
-        producer.send(mensaje);
-        return "Mensaje enviado: " + mensaje;
+    public String publishMessage(@RequestBody CustomMessage message) {
+        message.setSentAt(LocalDateTime.now());
+        producer.sendMessage(message);
+        return "Mensaje enviado a RabbitMQ.";
     }
 }
